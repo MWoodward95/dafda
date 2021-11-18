@@ -36,7 +36,7 @@ namespace Dafda.Configuration
         private ConfigurationSource _configurationSource = ConfigurationSource.Null;
         private IHandlerUnitOfWorkFactory _unitOfWorkFactory;
         private Func<ILoggerFactory, IConsumerScopeFactory> _consumerScopeFactory;
-        private IIncomingMessageFactory _incomingMessageFactory = new JsonIncomingMessageFactory();
+        private IIncomingMessageFactory _incomingMessageFactory = new JsonIncomingMessageFactory(new ThrowDefaultErrorsStrategy());
         private bool _readFromBeginning;
 
         public ConsumerConfigurationBuilder WithConfigurationSource(ConfigurationSource configurationSource)

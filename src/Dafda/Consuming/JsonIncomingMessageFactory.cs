@@ -13,13 +13,25 @@ namespace Dafda.Consuming
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
         };
 
+        private readonly IMalformedMessageStrategy _malformedMessageStrategy = new ThrowDefaultErrorsStrategy();
+
+        public JsonIncomingMessageFactory(IMalformedMessageStrategy malformedMessageStrategy)
+        {
+            this._malformedMessageStrategy = malformedMessageStrategy;
+        }
+
         public TransportLevelMessage Create(string rawMessage)
+        {
+            return _malformedMessageStrategy.Create(() => InternalCreate(rawMessage));
+        }
+
+        private TransportLevelMessage InternalCreate(string rawMessage)
         {
             var jsonDocument = JsonDocument.Parse(rawMessage);
 
             var dataProperty = jsonDocument.RootElement.GetProperty(MessageEnvelopeProperties.Data);
             var jsonData = dataProperty.GetRawText();
-            
+
             var metadataProperties = jsonDocument
                 .RootElement
                 .EnumerateObject()
